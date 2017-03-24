@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- <script src="jquery1.42.min.js"></script> -->
+	<script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+
+	<style>
+		img{
+			width: 300px;
+
+		}
+	</style>
+	<script>
+		$(document).ready(function () {
+			$('#btn').click(function(){
+				var value = $('#ipt').val();
+				$.ajax({
+					url:"https://api.imjad.cn/cloudmusic/?type=search&search_type=1004&s="+value+"&t="+new Date(),
+					// url:"https://api.imjad.cn/cloudmusic/?type=mv&id=524116&br=128000",
+					success:function(data){
+						// data = JSON.(data);
+						console.log(data);
+						var html = "";
+						$('.author').text(data.result.mvCount);
+						for(let i =0; i < data.result.mvs.length; i++){
+							var oSrc = data.result.mvs[i].cover;
+							var id = data.result.mvs[i].id;
+							html += "<li><a id="+id+"><img src="+ oSrc +"></a></li>"
+						}
+						$('#ul').html(html);
+					}
+				})
+			});
+
+			$("#ul").delegate('li','click',function(){
+				var id = $(this).children('a').attr("id");
+				var html = "";
+				$.ajax({
+					url:"https://api.imjad.cn/cloudmusic/?type=mv&id="+id+"&br=128000",
+					// url:"https://api.imjad.cn/cloudmusic/?type=mv&id=524116&br=128000",
+					success:function(data){
+						// data = JSON.(data);
+						console.log(data);
+
+						// for(let i =0; i < data.data.brs.length; i++){
+						// 	alert(data.data.brs[240]);
+						// 	// var oSrc = data.result.mvs[i].cover;
+						// 	// var id = data.result.mvs[i].id;
+						// 	// html += "<li><a id="+id+"><img src="+ oSrc +"></a></li>"
+
+						// }
+						var link = data.data.brs[240];
+						// html += "<video controls autoplay src='"+ link+"'></video>"
+						html += "<video controls autoplay name = 'media'>\
+						\ <source src = "+link +"></source>\
+						</video>"
+						$('body').prepend(html);
+					}
+				})
+			})
+		})
+	</script>
+	<style>
+		video{
+			width: 500px;
+		}
+	</style>
+</head>
+<body>
+	<input type="text" id="ipt" value="fade">
+	<input type="button" id="btn" value="确定">
+	<p class="author">1234</p>
+	<ul id="ul">
+		
+	</ul>
+</body>
+</html>
