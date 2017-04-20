@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>无标题文档</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+#q {width: 300px; height: 30px; padding: 5px; border:1px solid #f90; font-size: 16px;}
+dl {border-bottom: 1px dotted #000;}
+dt {font-weight: bold;}
+
+#pagination{
+	margin: 0;
+	padding: 0;
+	margin:0;
+}
+#pagination li{
+	display: inline-block;
+	padding: 15px;
+	border-radius: 5px;
+	border:1px solid #333;
+	list-style: none;
+}
+#pagination li:hover{
+	color: #fff;
+	background: #f90;
+	cursor: pointer;
+}
+</style>
+<script src="template.js"></script>
+<script id="test" type="text/html">
+{{if isAdmin}}
+
+<h1>{{title}}</h1>
+<ul>
+    {{each list as value i}}
+        <li>书本 {{i + 1}} ：{{value}}</li>
+    {{/each}}
+</ul>
+
+{{/if}}
+</script>
+
+<script>
+function fn1(data) {
+
+	var oMsg = document.getElementById('msg');
+	var oList = document.getElementById('list');
+	var oQ = document.getElementById('q');
+
+	
+	console.log(data);
+
+	
+
+
+	oMsg.innerHTML = data.title.$t + ' : ' + data['opensearch:totalResults'].$t;
+	
+	var aEntry = data.entry;
+	var html = '';
+	for (var i=0; i<aEntry.length; i++) {
+		
+		html += '<dl><dt>'+ aEntry[i].title.$t +'</dt><dd><img src="'+ aEntry[i].link[2]['@href'] +'" /></dd></dl>';
+		
+	}
+	
+	oList.innerHTML = html;
+	
+	var oPagination = document.getElementById('pagination');
+	var num = Math.ceil(data['opensearch:totalResults'].$t / 10);
+	var ohtml='';
+	for(var i=0;i<num;i++){
+		ohtml+='<li>'+(i+1)+'</li>';
+	}
+	oPagination.innerHTML=ohtml;
+
+	var oPagination = document.getElementById('pagination');
+
+	var pli=oPagination.getElementsByTagName('li');
+	for(var i=0;i<pli.length;i++){
+		pli[i].index = (i);
+		pli[i].onclick=function(){
+			var oScript = document.createElement('script');
+			oScript.src = 'http://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index='+(this.index*10)+'&max-results=10';
+			document.body.appendChild(oScript);
+		}
+	}
+
+	function arr(){
+		var longstr='';
+		for(var i=0;i<aEntry.length; i++){
+			longstr+=aEntry[i].title.$t+',';
+		}
+		var shuzu=longstr.substr(0,longstr.length-1).split(',');
+			return shuzu;
+	}
+	var data1= {
+		title:data.title.$t,
+		isAdmin:true,
+		list: arr()
+	}
+	var html = template('test', data1);
+	document.getElementById('content').innerHTML = html;
+
+
+}
+window.onload = function() {
+	
+	var oQ = document.getElementById('q');
+	var oBtn = document.getElementById('btn');
+	var oMsg = document.getElementById('msg');
+	var oList = document.getElementById('list');
+	
+	oBtn.onclick = function() {
+
+		if ( oQ.value != '' ) {
+			var oScript = document.createElement('script');
+			oScript.src = 'http://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index=0&max-results=10';
+			document.body.appendChild(oScript);
+		}
+		
+		//http://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index=(当前页*每页显示的条数)&max-results=10(每页显示的条数)
+		
+	}
+
+	
+}
+</script>
+</head>
+
+<body>
+<div id="content"></div>
+	输入你想要查询的书籍名，点击搜索。 点击页码 查看不同分页的数据
+	话说没有怎么优化， 有劳你费神了！<br/>
+	<!-- http://www.douban.com/service/apidoc/reference/ -->
+	<input type="text" id="q" value="javascript" /><input type="button" id="btn" value="搜索" />
+  <p id="msg"></p>
+	<ul id="pagination"></ul>
+  <hr />
+	<div id="list"></div>
+</body>
+</html>
