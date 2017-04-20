@@ -81,7 +81,7 @@ function fn1(data) {
 		pli[i].index = (i);
 		pli[i].onclick=function(){
 			var oScript = document.createElement('script');
-			oScript.src = 'http://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index='+(this.index*10)+'&max-results=10';
+			oScript.src = 'https://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index='+(this.index*10)+'&max-results=10';
 			document.body.appendChild(oScript);
 		}
 	}
@@ -115,7 +115,7 @@ window.onload = function() {
 
 		if ( oQ.value != '' ) {
 			var oScript = document.createElement('script');
-			oScript.src = 'http://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index=0&max-results=10';
+			oScript.src = 'https://api.douban.com/book/subjects?q='+oQ.value+'&alt=xd&callback=fn1&start-index=0&max-results=10';
 			document.body.appendChild(oScript);
 		}
 		
